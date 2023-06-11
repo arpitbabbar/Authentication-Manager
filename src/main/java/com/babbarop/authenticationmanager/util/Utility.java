@@ -1,6 +1,6 @@
 package com.babbarop.authenticationmanager.util;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.util.Date;
 import java.util.Random;
@@ -10,7 +10,7 @@ import java.util.Random;
  * @since 2023-06-12
  * @implNote Utility class for Authentication Manager
  */
-@Component
+@UtilityClass
 public class Utility {
 
     public static final Random random = new Random();
