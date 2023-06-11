@@ -22,6 +22,6 @@ public class OtpUser {
     private Date updatedOn;
     @Column(name = "otp_attempts")
     private Integer otpAttempts;
-    private Boolean blocked;
+    private boolean blocked;
 
 }

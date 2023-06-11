@@ -78,7 +78,7 @@ public class LoginService {
             Optional<OtpUser> user = otpUserRepository.findByEmailId(emailId);
             if(user.isPresent()) {
 
-                if(Boolean.TRUE.equals(user.get().getBlocked())){
+                if(user.get().isBlocked()){
                     generateOtpResponse.setStatusCode(AMErrorCodes.USER_BLOCKED);
                     response = ResponseEntity.ok().body(generateOtpResponse);
                     return response;
@@ -132,7 +132,7 @@ public class LoginService {
             Optional<OtpUser> user = otpUserRepository.findByEmailId(request.getEmail());
             if(user.isPresent()) {
                 long diffMinutes = Utility.getTimeDifference(user.get().getUpdatedOn());
-                if(Boolean.TRUE.equals(user.get().getBlocked())){
+                if(user.get().isBlocked()){
                     loginUserOtpResponse.setStatusCode(AMErrorCodes.USER_BLOCKED);
                     response = ResponseEntity.ok().body(loginUserOtpResponse);
                     return response;
