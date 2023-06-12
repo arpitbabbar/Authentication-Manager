@@ -27,12 +27,10 @@ public class LoginService {
 
     private static final Logger LOGGER = Logger.getLogger(LoginService.class.getName());
 
-    final
-    UserCredentialsRepository userCredentialsRepository;
+    private final UserCredentialsRepository userCredentialsRepository;
 
-    final
+    private final
     OtpUserRepository otpUserRepository;
-
 
     public LoginService(UserCredentialsRepository userCredentialsRepository, OtpUserRepository otpUserRepository) {
         this.userCredentialsRepository = userCredentialsRepository;
@@ -46,24 +44,21 @@ public class LoginService {
         try {
             Optional<UserCredentials> user = userCredentialsRepository.findByEmailId(request.getEmail());
             LOGGER.info("LoginService.loginUser() user: " + user);
-            if(user.isPresent()) {
-                if(user.get().getPassword().equals(request.getPassword())) {
+            if (user.isPresent()) {
+                if (user.get().getPassword().equals(request.getPassword())) {
                     loginUserEmailResponse.setUserId(user.get().getUserId());
                     loginUserEmailResponse.setStatusCode(AMErrorCodes.SUCCESS);
                     response = ResponseEntity.ok().body(loginUserEmailResponse);
-                }
-                else {
+                } else {
                     loginUserEmailResponse.setStatusCode(AMErrorCodes.PASSWORD_MISMATCH);
                     response = ResponseEntity.badRequest().body(loginUserEmailResponse);
                 }
-            }
-            else {
+            } else {
                 loginUserEmailResponse.setStatusCode(AMErrorCodes.INVALID_EMAIL);
                 response = ResponseEntity.badRequest().body(loginUserEmailResponse);
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.info("LoginController.loginUser() exception: " + e);
             loginUserEmailResponse.setStatusCode(AMErrorCodes.INTERNAL_ERROR);
             response = ResponseEntity.badRequest().body(loginUserEmailResponse);
@@ -76,9 +71,9 @@ public class LoginService {
         GenerateOtpResponse generateOtpResponse = new GenerateOtpResponse();
         try {
             Optional<OtpUser> user = otpUserRepository.findByEmailId(emailId);
-            if(user.isPresent()) {
+            if (user.isPresent()) {
 
-                if(user.get().isBlocked()){
+                if (user.get().isBlocked()) {
                     generateOtpResponse.setStatusCode(AMErrorCodes.USER_BLOCKED);
                     response = ResponseEntity.ok().body(generateOtpResponse);
                     return response;
@@ -91,7 +86,7 @@ public class LoginService {
                 LOGGER.info("LoginService.generateOtp() diff: " + diff);
                 long diffSeconds = diff / 1000 % 60;
                 LOGGER.info("LoginService.generateOtp() diffSeconds: " + diffSeconds);
-                if(diffSeconds < 30) {
+                if (diffSeconds < 30) {
                     generateOtpResponse.setStatusCode(AMErrorCodes.WAIT_OTP);
                     response = ResponseEntity.ok().body(generateOtpResponse);
                     return response;
@@ -102,8 +97,7 @@ public class LoginService {
                 user.get().setOtpAttempts(0);
                 otpUserRepository.save(user.get());
                 generateOtpResponse.setOtp(user.get().getOtp());
-            }
-            else {
+            } else {
                 OtpUser otpUser = new OtpUser();
                 otpUser.setEmailId(emailId);
                 otpUser.setOtp(Utility.generateOtp());
@@ -116,8 +110,7 @@ public class LoginService {
             }
             generateOtpResponse.setStatusCode(AMErrorCodes.OTP_GENERATED);
             response = ResponseEntity.ok().body(generateOtpResponse);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.info("LoginController.generateOtp() exception: " + e);
             generateOtpResponse.setStatusCode(AMErrorCodes.INTERNAL_ERROR);
             response = ResponseEntity.badRequest().body(generateOtpResponse);
@@ -130,43 +123,37 @@ public class LoginService {
         LoginUserOtpResponse loginUserOtpResponse = new LoginUserOtpResponse();
         try {
             Optional<OtpUser> user = otpUserRepository.findByEmailId(request.getEmail());
-            if(user.isPresent()) {
+            if (user.isPresent()) {
                 long diffMinutes = Utility.getTimeDifference(user.get().getUpdatedOn());
-                if(user.get().isBlocked()){
+                if (user.get().isBlocked()) {
                     loginUserOtpResponse.setStatusCode(AMErrorCodes.USER_BLOCKED);
                     response = ResponseEntity.ok().body(loginUserOtpResponse);
                     return response;
-                }
-                else if (diffMinutes >=1){
+                } else if (diffMinutes >= 1) {
                     loginUserOtpResponse.setStatusCode(AMErrorCodes.OTP_EXPIRED);
                     response = ResponseEntity.ok().body(loginUserOtpResponse);
                     return response;
-                }
-               else if(user.get().getOtp().equals(request.getOtp())) {
+                } else if (user.get().getOtp().equals(request.getOtp())) {
                     loginUserOtpResponse.setUserId(user.get().getId());
                     loginUserOtpResponse.setStatusCode(AMErrorCodes.SUCCESS);
-                }
-                else {
+                } else {
                     int otpAttempts = user.get().getOtpAttempts();
-                    if(otpAttempts >= 3) {
+                    if (otpAttempts >= 3) {
                         user.get().setBlocked(true);
                         otpUserRepository.save(user.get());
                         loginUserOtpResponse.setStatusCode(AMErrorCodes.USER_BLOCKED);
-                    }
-                    else {
+                    } else {
                         user.get().setOtpAttempts(otpAttempts + 1);
                         otpUserRepository.save(user.get());
                         loginUserOtpResponse.setStatusCode(AMErrorCodes.OTP_MISMATCH);
                     }
                 }
                 response = ResponseEntity.ok().body(loginUserOtpResponse);
-            }
-            else {
+            } else {
                 loginUserOtpResponse.setStatusCode(AMErrorCodes.INVALID_EMAIL);
                 response = ResponseEntity.badRequest().body(loginUserOtpResponse);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.info("LoginController.loginUser() exception: " + e);
         }
         return response;

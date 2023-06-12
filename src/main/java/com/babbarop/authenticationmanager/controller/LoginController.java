@@ -2,6 +2,7 @@ package com.babbarop.authenticationmanager.controller;
 
 import com.babbarop.authenticationmanager.request.LoginUserEmailRequest;
 import com.babbarop.authenticationmanager.request.LoginUserOtpRequest;
+import com.babbarop.authenticationmanager.request.SignUpUserRequest;
 import com.babbarop.authenticationmanager.service.LoginService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,11 @@ import java.util.logging.Logger;
  * @since 2023-06-12
  */
 
-@RestController("/login")
+@RestController
+@RequestMapping("/auth")
 public class LoginController {
 
-    final
-    LoginService loginService;
+    private final LoginService loginService;
 
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
@@ -76,6 +77,7 @@ public class LoginController {
         return response;
 
     }
+
 }
 
 

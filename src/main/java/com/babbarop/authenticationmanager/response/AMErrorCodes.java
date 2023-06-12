@@ -2,6 +2,9 @@ package com.babbarop.authenticationmanager.response;
 
 import lombok.Getter;
 
+/**
+ * @author Arpit Babbar
+ */
 @Getter
 public enum AMErrorCodes {
 
@@ -14,7 +17,14 @@ public enum AMErrorCodes {
     USER_BLOCKED(1007, "FAIL", "Your Request is Blocked. Due to multiple failed attempts. Try after some time"),
     WAIT_OTP(1008, "FAIL", "Please wait for 30 seconds before requesting for OTP again"),
     OTP_MISMATCH(1009, "FAIL", "Wrong OTP Entered"),
-    OTP_EXPIRED(1010, "FAIL", "OTP Expired. Please request for a new OTP");
+    OTP_EXPIRED(1010, "FAIL", "OTP Expired. Please request for a new OTP"),
+    EMAIL_ALREADY_EXISTS(1011, "FAIL", "Email ID already exists. Please try with other Email ID"),
+    PASSWORD_LENGTH(1012, "FAIL", "Password length should be greater than or equals to 8 characters"),
+    USER_NOT_FOUND(1013, "FAIL", "User not found"),
+    USER_PROFILE_DELETED(1014, "SUCCESS", "User profile deleted successfully"),
+    USER_PROFILE_UPDATED(1015, "SUCCESS", "User profile updated successfully"),
+    USER_STATUS_UPDATED(1016, "SUCCESS", "User status updated successfully");
+
 
     private final int statusCode;
     private final String status;
